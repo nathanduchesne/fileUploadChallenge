@@ -1,5 +1,7 @@
 ## Requirements
-Add a `compose.yaml` file at the root of the repository and replace the XXX with your environment variable values.
+Add a `compose.yaml` file at the root of the repository and replace the XXX with your environment variable values.  
+
+<em>SYM_KEY</em> should be a hexadecimal string representing your 256bit-key for the encryption/decryption. ex. "6368616e676520746869732070617373776f726420746f206120736563726574"
 ```
 version: '3'
 services:
