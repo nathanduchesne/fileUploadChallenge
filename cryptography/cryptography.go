@@ -9,6 +9,7 @@ import (
 	"io"
 )
 
+// Cipher interface provides methods for stream encryption and decryption.
 type Cipher interface {
 	Init()
 	EncryptStream(reader io.Reader, writer io.Writer) error
@@ -19,6 +20,7 @@ type StreamCipher struct {
 	block cipher.Block
 }
 
+// EncryptStream reads data from the provided io.Reader and encrypts it using a stream cipher which is written to the io.Writer.
 func (c *StreamCipher) EncryptStream(reader io.Reader, writer io.Writer) error {
 
 	iv := make([]byte, aes.BlockSize)
@@ -44,6 +46,7 @@ func (c *StreamCipher) EncryptStream(reader io.Reader, writer io.Writer) error {
 	return nil
 }
 
+// DecryptStream reads the stream of ciphertext from the io.Reader and decrypts it on the fly into the io.Writer.
 func (c *StreamCipher) DecryptStream(reader io.Reader, writer io.Writer) error {
 	// Read iv from the beginning of the stream
 	iv := make([]byte, aes.BlockSize)
@@ -62,6 +65,7 @@ func (c *StreamCipher) DecryptStream(reader io.Reader, writer io.Writer) error {
 	return nil
 }
 
+// Init initializes the stream cipher using a secret key. If this key is derived from a passcode, ensure it was passed through a KDF.
 func (c *StreamCipher) Init(hexKey string) {
 	key, _ := hex.DecodeString(hexKey)
 	block, err := aes.NewCipher(key)
