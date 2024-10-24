@@ -137,6 +137,8 @@ func uploadHandler(minioClient *minio.Client, cipher *cryptography.StreamCipher)
 			}
 		}()
 
+		uploadError := make(chan bool)
+
 		// 3) Uploads the encrypted data stream to MinIO
 		go func() {
 			defer wg.Done()
@@ -160,10 +162,16 @@ func uploadHandler(minioClient *minio.Client, cipher *cryptography.StreamCipher)
 
 			if err != nil {
 				http.Error(w, "Upload to MinIO failed", http.StatusInternalServerError)
-				return
+				uploadError <- true
+			} else {
+				uploadError <- false
 			}
 		}()
 
+		errInUpload := <-uploadError
+		if errInUpload {
+			return
+		}
 		wg.Wait()
 		// If everything went well, send a success response
 		fmt.Fprintf(w, "File successfully uploaded and encrypted with UID %s \n", objectName)
